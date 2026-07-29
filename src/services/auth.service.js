@@ -48,3 +48,12 @@ export const login = async (email, password) => {
     },
   };
 };
+
+export const getMe = async (userId) => {
+  const user = await userRepository.findById(userId);
+  if (!user) {
+    throw new AppError('Usuario no encontrado', 404);
+  }
+
+  return user;
+};

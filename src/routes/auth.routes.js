@@ -1,11 +1,12 @@
 import { Router } from 'express';
 
-import { login, register } from '../controllers/auth.controller.js';
+import { login, register, getMe } from '../controllers/auth.controller.js';
 import { validate } from '../middlewares/validation.middleware.js';
 import {
   loginValidator,
   registerValidator,
 } from '../validators/auth.validator.js';
+import { authenticate } from '../middlewares/auth.middleware.js';
 
 const router = Router();
 
@@ -65,5 +66,7 @@ router.post('/register', registerValidator, validate, register);
  *         description: Login exitoso
  */
 router.post('/login', loginValidator, validate, login);
+
+router.get('/me', authenticate, getMe);
 
 export default router;
