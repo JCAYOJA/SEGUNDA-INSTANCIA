@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 
 import { env } from '../config/env.js';
+import logger from '../config/logger.js';
 
 export const authenticate = (req, res, next) => {
   const authHeader = req.headers.authorization;
@@ -20,6 +21,7 @@ export const authenticate = (req, res, next) => {
 
     next();
   } catch (error) {
+    logger.info(error);
     return res.status(401).json({
       message: 'Token inválido',
     });
