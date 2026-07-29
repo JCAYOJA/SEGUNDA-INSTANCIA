@@ -1,9 +1,12 @@
 import * as authService from '../services/auth.service.js';
 import { successResponse } from '../utils/response.js';
 import { toUserResponse } from '../dto/user-response.dto.js';
+import { createUserDto } from '../dto/create-user.dto.js';
 
 export const register = async (req, res) => {
-  const user = await authService.register(req.body);
+
+  const dto = createUserDto(req.body);
+  const user = await authService.register(dto);
 
   return successResponse(
     res,
