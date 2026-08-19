@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import taskRoutes from './task.routes.js';
 import authRoutes from './auth.routes.js';
+import projectRoutes from './project.routes.js'; // 1. Importado correctamente con el .js
 
 const router = Router();
 
@@ -16,5 +17,7 @@ router.get('/health', (req, res) => {
 
 router.use('/tasks', taskRoutes);
 router.use('/auth', authRoutes);
+router.use('/projects', projectRoutes); // 2. Registrado el prefijo /projects oficial
 
 export default router;
+
