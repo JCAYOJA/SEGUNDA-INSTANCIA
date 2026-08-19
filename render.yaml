@@ -1,0 +1,43 @@
+services:
+  - type: web
+    name: jhonny-cayoja
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm run dev
+    envVars:
+      - key: PORT
+        value: 3000
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        value: change_this_secret_key_12345
+      - key: JWT_EXPIRES_IN
+        value: 1d
+      - key: LOG_LEVEL
+        value: info
+      - key: DB_HOST
+        fromDatabase:
+          name: taskflow-db-jc
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: taskflow-db-jc
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: taskflow-db-jc
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: taskflow-db-jc
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: taskflow-db-jc
+          property: password
+
+databases:
+  - name: taskflow-db-jc
+    plan: free
+    user: jcayoja
