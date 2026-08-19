@@ -6,7 +6,7 @@ import {
   updateProject, 
   deleteProject 
 } from '../controllers/project.controller.js';
-import authenticate from '../middlewares/auth.middleware.js';
+import { authenticate } from '../middlewares/auth.middleware.js'; // Corrección aquí
 import validationMiddleware from '../middlewares/validation.middleware.js';
 import { 
   createProjectValidator, 
