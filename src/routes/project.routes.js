@@ -6,8 +6,8 @@ import {
   updateProject, 
   deleteProject 
 } from '../controllers/project.controller.js';
-import { authenticate } from '../middlewares/auth.middleware.js'; // Corrección aquí
-import validationMiddleware from '../middlewares/validation.middleware.js';
+import { authenticate } from '../middlewares/auth.middleware.js'; 
+import { validate } from '../middlewares/validation.middleware.js'; // CORREGIDO: Nombre correcto con llaves
 import { 
   createProjectValidator, 
   updateProjectValidator, 
@@ -65,7 +65,7 @@ router.use(authenticate);
  *       500:
  *         description: Error interno del servidor
  */
-router.post('/', createProjectValidator, validationMiddleware, createProject);
+router.post('/', createProjectValidator, validate, createProject); // Actualizado aquí
 router.get('/', getProjects);
 
 /**
@@ -152,8 +152,8 @@ router.get('/', getProjects);
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/:id', getProjectByIdValidator, validationMiddleware, getProjectById);
-router.put('/:id', updateProjectValidator, validationMiddleware, updateProject);
-router.delete('/:id', getProjectByIdValidator, validationMiddleware, deleteProject);
+router.get('/:id', getProjectByIdValidator, validate, getProjectById); // Actualizado aquí
+router.put('/:id', updateProjectValidator, validate, updateProject); // Actualizado aquí
+router.delete('/:id', getProjectByIdValidator, validate, deleteProject); // Actualizado aquí
 
 export default router;
