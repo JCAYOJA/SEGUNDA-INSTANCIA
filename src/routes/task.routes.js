@@ -1,53 +1,57 @@
 import { Router } from 'express';
-
 import * as taskController from '../controllers/task.controller.js';
-import {
-  createTaskValidator,
-  updateTaskValidator,
-} from '../validators/task.validator.js';
 import { validate } from '../middlewares/validation.middleware.js';
 import { authenticate } from '../middlewares/auth.middleware.js';
-import { uuidParamValidator } from '../validators/common.validator.js';
 
 const router = Router();
 
+// Todas las rutas de este módulo requieren autenticación por token Bearer de forma global
+router.use(authenticate);
+
 /**
  * @swagger
- * /tasks:
+ * /tasks/{projectId}:
  *   get:
  *     tags:
  *       - Tasks
- *     summary: Obtener todas las tareas del usuario autenticado con paginación
- *     security:
- *       - bearerAuth: []
+ *     summary: Obtener todas las tareas de un proyecto con paginación
  *     parameters:
+ *       - in: path
+ *         name: projectId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
  *       - in: query
  *         name: page
  *         schema:
  *           type: integer
  *           default: 1
- *         description: Número de página que deseas consultar (Por defecto 1)
  *       - in: query
  *         name: limit
  *         schema:
  *           type: integer
  *           default: 10
- *         description: Cantidad de tareas por página (Por defecto 10)
  *     responses:
  *       200:
- *         description: Lista de tareas paginada obtenida con éxito
+ *         description: Lista paginada de tareas devuelta con éxito
  */
-router.get('/', authenticate, taskController.getPaginatedTasks); // Actualizado aquí para paginación
+router.get('/:projectId', taskController.getPaginatedTasks);
 
 /**
  * @swagger
- * /tasks:
+ * /tasks/{projectId}:
  *   post:
  *     tags:
  *       - Tasks
- *     summary: Crear una nueva tarea
- *     security:
- *       - bearerAuth: []
+ *     summary: Crear una nueva tarea en un proyecto
+ *     parameters:
+ *       - in: path
+ *         name: projectId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
  *     requestBody:
  *       required: true
  *       content:
@@ -63,58 +67,20 @@ router.get('/', authenticate, taskController.getPaginatedTasks); // Actualizado 
  *                 type: string
  *     responses:
  *       201:
- *         description: Tarea creada
+ *         description: Tarea asignada al proyecto con éxito
  */
-router.post(
-  '/',
-  authenticate,
-  createTaskValidator,
-  validate,
-  taskController.createTask
-);
+router.post('/:projectId', validate, taskController.createTask);
 
 /**
  * @swagger
- * /tasks/{id}:
- *   get:
+ * /tasks/{projectId}:
+ *   patch:
  *     tags:
  *       - Tasks
- *     summary: Obtener una tarea por ID
- *     security:
- *       - bearerAuth: []
+ *     summary: Actualizar una tarea perteneciente a un proyecto
  *     parameters:
  *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *           format: uuid
- *     responses:
- *       200:
- *         description: Tarea encontrada
- *       404:
- *         description: Tarea no encontrada
- */
-router.get(
-  '/:id',
-  authenticate,
-  uuidParamValidator,
-  validate,
-  taskController.getTask
-);
-
-/**
- * @swagger
- * /tasks/{id}:
- *   put:
- *     tags:
- *       - Tasks
- *     summary: Actualizar una tarea
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
+ *         name: projectId
  *         required: true
  *         schema:
  *           type: string
@@ -125,80 +91,84 @@ router.get(
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - taskId
  *             properties:
+ *               taskId:
+ *                 type: string
+ *                 format: uuid
  *               title:
  *                 type: string
  *               description:
  *                 type: string
  *     responses:
  *       200:
- *         description: Tarea actualizada
+ *         description: Tarea modificada con éxito
  */
-router.put(
-  '/:id',
-  authenticate,
-  uuidParamValidator,
-  updateTaskValidator,
-  validate,
-  taskController.updateTask
-);
+router.patch('/:projectId', validate, taskController.updateTask);
 
 /**
  * @swagger
- * /tasks/{id}:
+ * /tasks/{projectId}:
  *   delete:
  *     tags:
  *       - Tasks
- *     summary: Eliminar una tarea
- *     security:
- *       - bearerAuth: []
+ *     summary: Eliminar una tarea de un proyecto
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: projectId
  *         required: true
  *         schema:
  *           type: string
  *           format: uuid
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - taskId
+ *             properties:
+ *               taskId:
+ *                 type: string
+ *                 format: uuid
  *     responses:
  *       200:
- *         description: Tarea eliminada
+ *         description: Tarea eliminada del sistema
  */
-router.delete(
-  '/:id',
-  authenticate,
-  uuidParamValidator,
-  validate,
-  taskController.deleteTask
-);
+router.delete('/:projectId', validate, taskController.deleteTask);
 
 /**
  * @swagger
- * /tasks/{id}/complete:
+ * /tasks/{projectId}/complete:
  *   patch:
  *     tags:
  *       - Tasks
- *     summary: Marcar una tarea como completada
- *     security:
- *       - bearerAuth: []
+ *     summary: Marcar una tarea de un proyecto como completada
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: projectId
  *         required: true
  *         schema:
  *           type: string
  *           format: uuid
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - taskId
+ *             properties:
+ *               taskId:
+ *                 type: string
+ *                 format: uuid
  *     responses:
  *       200:
- *         description: Tarea marcada como completada
- *       404:
- *         description: Tarea no encontrada
+ *         description: Estado de la tarea modificado a completado
  */
-router.patch(
-  '/:id/complete',
-  authenticate,
-  uuidParamValidator,
-  validate,
-  taskController.completeTask
-);
+router.patch('/:projectId/complete', validate, taskController.completeTask);
 
 export default router;
