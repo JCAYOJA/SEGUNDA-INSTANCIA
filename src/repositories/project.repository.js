@@ -10,9 +10,21 @@ class ProjectRepository {
     return await Project.findAll({ where: { user_id } });
   }
 
-  async findByIdWithTasks(id) {
-    return await Project.findByPk(id, {
-      include: [{ model: Task, as: 'tasks' }]
+  // 🚀 OPTIMIZADO: Implementación de la investigación 3.2 con atributos y seguridad de usuario
+  async findByIdWithTasks(id, user_id) {
+    return await Project.findOne({
+      where: { 
+        id, 
+        user_id // Seguridad: Valida que pertenezca al usuario autenticado
+      },
+      attributes: ['id', 'name', 'description', 'createdAt'], // Atributos específicos del proyecto
+      include: [
+        { 
+          model: Task, 
+          as: 'tasks', // Alias obligatorio definido en associations.js
+          attributes: ['id', 'title', 'description', 'completed', 'createdAt'] // Atributos específicos de la relación
+        }
+      ]
     });
   }
 

@@ -32,14 +32,21 @@ export const getProjects = async (req, res) => {
   }
 };
 
-export const getProjectById = async (req, res) => {
+// 🚀 OPTIMIZADO: Envía el user_id para control relacional seguro y delega errores al middleware global
+export const getProjectById = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const project = await projectService.getProjectById(id);
-    if (!project) return res.status(404).json({ success: false, message: "Proyecto no encontrado" });
-    return res.status(200).json({ success: true, message: "Proyecto obtenido", data: project });
+    const user_id = req.user.id; // Extraído por tu middleware authenticate
+
+    const project = await projectService.getProjectById(id, user_id);
+    
+    return res.status(200).json({ 
+      success: true, 
+      message: "Proyecto obtenido con sus tareas", 
+      data: project 
+    });
   } catch (error) {
-    return res.status(500).json({ success: false, message: "Error al obtener el proyecto", error: error.message });
+    next(error); // Permite que tu AppError 404 sea manejado de manera centralizada
   }
 };
 

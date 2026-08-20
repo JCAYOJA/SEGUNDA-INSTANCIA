@@ -49,3 +49,25 @@ export const completeTask = async (req, res) => {
 
   return successResponse(res, task, 'Tarea completada');
 };
+
+// 🚀 NUEVA FUNCIÓN: Implementación del controlador de paginado
+export const getPaginatedTasks = async (req, res, next) => {
+  try {
+    // 1. Extraer los query params de la URL (?page=2&limit=5)
+    const { page, limit } = req.query;
+    const userId = req.user.id;
+
+    // 2. Ejecutar la lógica de negocio estructurada en el servicio
+    const { tasks, pagination } = await taskService.getPaginatedTasks(userId, page, limit);
+
+    // 3. Responder usando tu helper, incluyendo los datos y la metadata de paginación
+    return res.status(200).json({
+      success: true,
+      message: 'Tareas obtenidas con paginación',
+      meta: pagination,
+      data: tasks
+    });
+  } catch (error) {
+    next(error); // Envía cualquier error inesperado al middleware global
+  }
+};

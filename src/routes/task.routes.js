@@ -17,14 +17,27 @@ const router = Router();
  *   get:
  *     tags:
  *       - Tasks
- *     summary: Obtener todas las tareas del usuario autenticado
+ *     summary: Obtener todas las tareas del usuario autenticado con paginación
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Número de página que deseas consultar (Por defecto 1)
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: Cantidad de tareas por página (Por defecto 10)
  *     responses:
  *       200:
- *         description: Lista de tareas
+ *         description: Lista de tareas paginada obtenida con éxito
  */
-router.get('/', authenticate, taskController.getAllTasks);
+router.get('/', authenticate, taskController.getPaginatedTasks); // Actualizado aquí para paginación
 
 /**
  * @swagger

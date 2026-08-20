@@ -1,4 +1,5 @@
 import projectRepository from '../repositories/project.repository.js';
+import { AppError } from '../utils/AppError.js'; // Importamos tu clase de errores
 
 class ProjectService {
   async createProject(data) {
@@ -10,8 +11,15 @@ class ProjectService {
     return await projectRepository.findAllByUserId(user_id);
   }
 
-  async getProjectById(id) {
-    return await projectRepository.findByIdWithTasks(id);
+  // 🚀 OPTIMIZADO: Envía el user_id para control de seguridad y maneja el error 404
+  async getProjectById(id, user_id) {
+    const project = await projectRepository.findByIdWithTasks(id, user_id);
+
+    if (!project) {
+      throw new AppError('Proyecto no encontrado', 404);
+    }
+
+    return project;
   }
 
   async updateProject(id, data) {

@@ -1,3 +1,4 @@
+// src/repositories/task.repository.js
 import Task from '../entities/task.entity.js';
 
 export const create = async (data) => {
@@ -30,4 +31,17 @@ export const update = async (task, data) => {
 
 export const remove = async (task) => {
   return await task.destroy();
+};
+
+// 🚀 FUNCIÓN DE PAGINACIÓN: Agrega esto al final de tu archivo
+export const findAllPaginated = async (userId, limit, offset) => {
+  return await Task.findAndCountAll({
+    where: {
+      userId, 
+    },
+    limit: limit,   
+    offset: offset, 
+    attributes: ['id', 'title', 'description', 'completed'],
+    order: [['createdAt', 'DESC']], 
+  });
 };

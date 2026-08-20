@@ -50,3 +50,30 @@ export const completeTask = async (id, userId) => {
     completed: true,
   });
 };
+
+// 🚀 NUEVA FUNCIÓN: Implementación de la investigación de paginado
+export const getPaginatedTasks = async (userId, pageParam, limitParam) => {
+  // 1. Convertir parámetros a enteros y definir valores por defecto
+  const page = parseInt(pageParam, 10) || 1;
+  const limit = parseInt(limitParam, 10) || 10;
+
+  // 2. Aplicar la fórmula matemática investigada para calcular el desplazamiento (offset)
+  const offset = (page - 1) * limit;
+
+  // 3. Consultar los datos y conteo total llamando a la nueva función del repositorio
+  const { count: totalItems, rows: tasks } = await repository.findAllPaginated(userId, limit, offset);
+
+  // 4. Calcular el total de páginas usando Math.ceil()
+  const totalPages = Math.ceil(totalItems / limit);
+
+  // Retornar los datos estructurados con su metadata de control
+  return {
+    tasks,
+    pagination: {
+      totalItems,
+      totalPages,
+      currentPage: page,
+      itemsPerPage: limit,
+    }
+  };
+};
